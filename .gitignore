@@ -1,0 +1,21 @@
+# Dependency directories
+vendor/
+node_modules/
+
+# Logs and cache
+*.log
+*.cache
+*.tmp
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files (in case you add one later)
+.env
+
+# Build outputs
+/build
+/dist
+/public/build

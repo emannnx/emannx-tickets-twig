@@ -1,0 +1,19 @@
+{% set current_path = app.request.pathinfo %}
+
+{% if current_path != '/' %}
+<nav class="navbar">
+    <div class="navbar-container">
+        <a href="/" class="navbar-logo">emannx-tickets</a>
+        <div class="navbar-menu">
+            {% if app.session.get('logged_in') %}
+                <a href="/dashboard" class="nav-link {{ current_path == '/dashboard' ? 'active' : '' }}">Dashboard</a>
+                <a href="/tickets" class="nav-link {{ current_path == '/tickets' ? 'active' : '' }}">Tickets</a>
+                <a href="/auth/logout" class="nav-logout">Logout</a>
+            {% else %}
+                <a href="/auth/login" class="nav-link {{ current_path == '/auth/login' ? 'active' : '' }}">Login</a>
+                <a href="/auth/signup" class="nav-link {{ current_path == '/auth/signup' ? 'active' : '' }}">Sign Up</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+{% endif %}

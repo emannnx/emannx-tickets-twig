@@ -1,0 +1,195 @@
+{% extends "base.html.twig" %}
+
+{% block title %}Dashboard - {{ parent() }}{% endblock %}
+
+{% block content %}
+<div class="simple-dashboard">
+    <!-- Welcome Header -->
+    <div class="welcome-card">
+        <div class="welcome-content">
+            <h1 class="welcome-greeting">Hello, {{ app.session.user_email|split('@')|first|capitalize }}! 👋</h1>
+            <p class="welcome-message">Here's an overview of your tickets today. Hope you're having a productive day!</p>
+        </div>
+        <div class="welcome-actions">
+            <a href="/tickets/create" class="btn btn-primary">
+                <span class="btn-icon">+</span>
+                New Ticket
+            </a>
+            <a href="/tickets" class="btn btn-outline">
+                View All Tickets
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="stats-section">
+        <h2 class="section-title">Ticket Overview</h2>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-content">
+                    <div class="stat-number">{{ stats.total }}</div>
+                    <div class="stat-label">Total Tickets</div>
+                </div>
+                
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-content">
+                    <div class="stat-number">{{ stats.open }}</div>
+                    <div class="stat-label">Needs Attention</div>
+                </div>
+                
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-content">
+                    <div class="stat-number">{{ stats.in_progress }}</div>
+                    <div class="stat-label">In Progress</div>
+                </div>
+               
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-content">
+                    <div class="stat-number">{{ stats.resolved }}</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-content">
+        <!-- Recent Activity -->
+        <div class="content-card">
+            <div class="card-header">
+                <h3 class="card-title">Recent Activity</h3>
+                <a href="/tickets" class="text-link">View all</a>
+            </div>
+            <div class="card-body">
+                {% if recentTickets is not empty %}
+                    <div class="activity-feed">
+                        {% for ticket in recentTickets|slice(0, 5) %}
+                            <div class="activity-item">
+                                <div class="activity-icon">
+                                    {% if ticket.status == 'open' %}
+                                        <div class="icon-badge open"></div>
+                                    {% elseif ticket.status == 'in_progress' %}
+                                        <div class="icon-badge progress"></div>
+                                    {% else %}
+                                        <div class="icon-badge resolved"></div>
+                                    {% endif %}
+                                </div>
+                                <div class="activity-details">
+                                    <h4 class="activity-title">{{ ticket.title }}</h4>
+                                    <div class="activity-meta">
+                                        <span class="status-tag status-{{ ticket.status }}">
+                                            {{ ticket.status|replace({'_': ' '})|title }}
+                                        </span>
+                                        <span class="activity-time">{{ ticket.created_at|date('M j, g:i A') }}</span>
+                                    </div>
+                                </div>
+                                <a href="/tickets/edit/{{ ticket.id }}" class="view-link">View →</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <p class="empty-text">No recent tickets yet</p>
+                        <p class="empty-help">Create your first ticket to get started</p>
+                        <a href="/tickets/create" class="btn btn-primary">Create Ticket</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Actions & Urgent Tickets -->
+        <div class="sidebar-cards">
+            <!-- Quick Actions -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h3 class="card-title">Quick Actions</h3>
+                </div>
+                <div class="card-body">
+                    <div class="actions-list">
+                        <a href="/tickets/create" class="action-link">
+                            
+                            <span class="action-text">Create New Ticket</span>
+                        </a>
+                        <a href="/tickets" class="action-link">
+                            
+                            <span class="action-text">Manage All Tickets</span>
+                        </a>
+                     
+                    </div>
+                </div>
+            </div>
+
+            <!-- Urgent Tickets -->
+            {% if urgentTickets is not empty %}
+            <div class="content-card urgent-card">
+                <div class="card-header">
+                    <h3 class="card-title">Priority Items</h3>
+                    <span class="urgent-count">{{ urgentTickets|length }} urgent</span>
+                </div>
+                <div class="card-body">
+                    <div class="urgent-list">
+                        {% for ticket in urgentTickets|slice(0, 3) %}
+                            <div class="urgent-item">
+                                <div class="urgent-marker"></div>
+                                <div class="urgent-content">
+                                    <h4 class="urgent-title">{{ ticket.title }}</h4>
+                                    <p class="urgent-meta">Created {{ ticket.created_at|date('M j') }} • {{ ticket.status|replace({'_': ' '})|title }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if urgentTickets|length > 3 %}
+                        <div class="card-footer">
+                            <a href="/tickets" class="text-link">+{{ urgentTickets|length - 3 }} more priority items</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Helpful Tips -->
+   
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+function showComingSoon() {
+    alert('This feature is coming soon! We\'re working on making your experience even better.');
+}
+
+// Simple hover effects
+document.addEventListener('DOMContentLoaded', function() {
+    const statItems = document.querySelectorAll('.stat-item');
+    const activityItems = document.querySelectorAll('.activity-item');
+    
+    statItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+    
+    activityItems.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.backgroundColor = '#f8f9fa';
+        });
+        item.addEventListener('mouseleave', function() {
+            this.style.backgroundColor = '';
+        });
+    });
+});
+</script>
+{% endblock %}

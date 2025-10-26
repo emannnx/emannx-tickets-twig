@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}emannx-tickets{% endblock %}</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/auth.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/tickets.css">
+    <link rel="stylesheet" href="/css/landing.css">
+    
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+    <div class="main-content">
+        {% include 'includes/navbar.html.twig' %}
+
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+
+        {% include 'includes/footer.html.twig' %}
+    </div>
+
+    <!-- Flash Messages -->
+    {% if flash %}
+        <div class="flash-message flash-{{ flash.type }}">
+            {{ flash.message }}
+        </div>
+        <script>
+            setTimeout(() => {
+                const flashMessage = document.querySelector('.flash-message');
+                if (flashMessage) {
+                    flashMessage.style.display = 'none';
+                }
+            }, 3000);
+        </script>
+    {% endif %}
+
+    <!-- JavaScript -->
+    <script src="/js/app.js"></script>
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

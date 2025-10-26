@@ -1,0 +1,262 @@
+{% extends "base.html.twig" %}
+
+{% block title %}{% if editingId %}Edit Ticket{% else %}{% if showForm %}Create Ticket{% else %}Tickets{% endif %}{% endif %} - {{ parent() }}{% endblock %}
+
+{% block content %}
+<div class="tickets-container">
+    <!-- Header -->
+    <div class="tickets-header">
+        <div class="header-content">
+            <h1 class="page-title">
+                {% if editingId %}
+                    Edit Ticket
+                {% else %}
+                    {% if showForm %}
+                        Create New Ticket
+                    {% else %}
+                        🎫 My Tickets
+                    {% endif %}
+                {% endif %}
+            </h1>
+            <p class="page-subtitle">
+                {% if editingId %}
+                    Update your ticket information
+                {% else %}
+                    {% if showForm %}
+                        Create a new support ticket
+                    {% else %}
+                        Manage all your support tickets in one place
+                    {% endif %}
+                {% endif %}
+            </p>
+        </div>
+        
+        {% if not showForm %}
+        <div class="header-actions">
+            <a href="/tickets/create" class="btn btn-primary btn-create">
+                <span class="btn-icon">+</span>
+                Create Ticket
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Ticket Form -->
+    {% if showForm %}
+    <div class="ticket-form-section">
+        <div class="form-card">
+            <form method="POST" action="{% if editingId %}/tickets/update/{{ editingId }}{% else %}/tickets/create{% endif %}" class="ticket-form">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label for="title" class="form-label">Ticket Title *</label>
+                        <input
+                            type="text"
+                            id="title"
+                            name="title"
+                            value="{{ editingId ? ticket.title : old.title }}"
+                            placeholder="What do you need help with?"
+                            class="form-input {{ errors.title ? 'error' : '' }}"
+                            required
+                        />
+                        {% if errors.title %}
+                            <span class="error-message">{{ errors.title }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            placeholder="Please describe the issue in detail..."
+                            rows="5"
+                            class="form-textarea"
+                        >{{ editingId ? ticket.description : old.description }}</textarea>
+                        <div class="help-text">Provide as much detail as possible for faster resolution</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status" class="form-label">Status *</label>
+                        <select
+                            id="status"
+                            name="status"
+                            class="form-select {{ errors.status ? 'error' : '' }}"
+                            required
+                        >
+                            <option value="open" {{ (editingId ? ticket.status : old.status) == 'open' ? 'selected' : '' }}>🟢 Open</option>
+                            <option value="in_progress" {{ (editingId ? ticket.status : old.status) == 'in_progress' ? 'selected' : '' }}>🟡 In Progress</option>
+                            <option value="closed" {{ (editingId ? ticket.status : old.status) == 'closed' ? 'selected' : '' }}>🔴 Closed</option>
+                        </select>
+                        {% if errors.status %}
+                            <span class="error-message">{{ errors.status }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="priority" class="form-label">Priority</label>
+                        <select id="priority" name="priority" class="form-select">
+                            <option value="Low" {{ (editingId ? ticket.priority : old.priority) == 'Low' ? 'selected' : '' }}>🟢 Low</option>
+                            <option value="Normal" {{ (editingId ? ticket.priority : old.priority) == 'Normal' ? 'selected' : '' }}>🟡 Normal</option>
+                            <option value="High" {{ (editingId ? ticket.priority : old.priority) == 'High' ? 'selected' : '' }}>🟠 High</option>
+                            <option value="Urgent" {{ (editingId ? ticket.priority : old.priority) == 'Urgent' ? 'selected' : '' }}>🔴 Urgent</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary btn-submit">
+                        {% if editingId %}
+                            💾 Update Ticket
+                        {% else %}
+                            🚀 Create Ticket
+                        {% endif %}
+                    </button>
+                    <a href="/tickets" class="btn btn-secondary">← Back to Tickets</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Tickets List -->
+    {% if not showForm %}
+    <div class="tickets-content">
+        <!-- Quick Stats -->
+        <div class="tickets-stats">
+            <div class="stat-item">
+                <div class="stat-number">{{ tickets|length }}</div>
+                <div class="stat-label">Total Tickets</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ tickets|filter(t => t.status == 'open')|length }}</div>
+                <div class="stat-label">Open</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ tickets|filter(t => t.status == 'in_progress')|length }}</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">{{ tickets|filter(t => t.status == 'closed')|length }}</div>
+                <div class="stat-label">Resolved</div>
+            </div>
+        </div>
+
+        <!-- Filters and Search -->
+        <div class="tickets-filters">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Search tickets..." class="search-input">
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="open">Open</button>
+                <button class="filter-btn" data-filter="in_progress">In Progress</button>
+                <button class="filter-btn" data-filter="closed">Closed</button>
+            </div>
+        </div>
+
+        <!-- Tickets Grid -->
+        <div class="tickets-grid" id="ticketsGrid">
+            {% if tickets is empty %}
+                <div class="empty-state">
+                    <div class="empty-icon">🎫</div>
+                    <h3>No tickets yet</h3>
+                    <p>Create your first ticket to get started with support</p>
+                    <a href="/tickets/create" class="btn btn-primary">Create First Ticket</a>
+                </div>
+            {% else %}
+                {% for ticket in tickets %}
+                    <div class="ticket-card" data-status="{{ ticket.status }}" data-priority="{{ ticket.priority|lower }}">
+                        <div class="ticket-header">
+                            <div class="ticket-title-section">
+                                <h3 class="ticket-title">{{ ticket.title }}</h3>
+                                <div class="ticket-meta">
+                                    <span class="priority-badge priority-{{ ticket.priority|lower }}">{{ ticket.priority }}</span>
+                                    <span class="date">Created {{ ticket.created_at|date('M j, Y') }}</span>
+                                </div>
+                            </div>
+                            <div class="ticket-status">
+                                <span class="status-badge status-{{ ticket.status }}">
+                                    {{ ticket.status|replace({'_': ' '})|title }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="ticket-body">
+                            <p class="ticket-description">
+                                {{ ticket.description ?: 'No description provided' }}
+                            </p>
+                        </div>
+
+                        <div class="ticket-footer">
+                            <div class="ticket-author">
+                                <small>By: {{ ticket.created_by }}</small>
+                            </div>
+                            <div class="ticket-actions">
+                                <a href="/tickets/edit/{{ ticket.id }}" class="btn-action btn-edit" title="Edit Ticket">
+                                    ✏️ Edit
+                                </a>
+                                <a href="/tickets/delete/{{ ticket.id }}" 
+                                   class="btn-action btn-delete" 
+                                   title="Delete Ticket"
+                                   onclick="return confirm('Are you sure you want to delete this ticket?')">
+                                    🗑️ Delete
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter and Search functionality
+    const searchInput = document.getElementById('searchInput');
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const ticketCards = document.querySelectorAll('.ticket-card');
+    
+    function filterTickets() {
+        const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+        const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
+        
+        ticketCards.forEach(card => {
+            const title = card.querySelector('.ticket-title').textContent.toLowerCase();
+            const description = card.querySelector('.ticket-description').textContent.toLowerCase();
+            const status = card.dataset.status;
+            
+            const matchesSearch = !searchTerm || title.includes(searchTerm) || description.includes(searchTerm);
+            const matchesFilter = activeFilter === 'all' || status === activeFilter;
+            
+            if (matchesSearch && matchesFilter) {
+                card.style.display = 'block';
+                setTimeout(() => card.style.opacity = '1', 50);
+            } else {
+                card.style.opacity = '0';
+                setTimeout(() => card.style.display = 'none', 300);
+            }
+        });
+    }
+    
+    // Event listeners
+    if (searchInput) {
+        searchInput.addEventListener('input', filterTickets);
+    }
+    
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            filterButtons.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            filterTickets();
+        });
+    });
+    
+    // Initialize
+    filterTickets();
+});
+</script>
+{% endblock %}

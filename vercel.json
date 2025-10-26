@@ -1,24 +1,12 @@
 {
-  "version": 2,
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
-    "api/index.php": {
-      "runtime": "vercel-php@0.6.0"
+    "public/*.php": {
+      "runtime": "vercel-php@0.6.0",
+      "maxDuration": 30
     }
   },
   "routes": [
-    {
-      "src": "/public/(.*)",
-      "headers": {
-        "Cache-Control": "s-maxage=31536000, immutable"
-      },
-      "continue": true
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/api/index.php"
-    }
-  ],
-  "env": {
-    "APP_ENV": "production"
-  }
+    { "src": "/(.*)", "dest": "/public/index.php" }
+  ]
 }

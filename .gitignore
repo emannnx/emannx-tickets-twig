@@ -1,0 +1,9 @@
+vendor/
+data/tickets.db
+data/tickets.json
+cache/
+.env
+*.log
+.DS_Store
+.htaccess
+/composer.phar

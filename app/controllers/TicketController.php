@@ -46,7 +46,7 @@ class TicketController {
             if (empty($errors)) {
                 Ticket::create($data);
                 $_SESSION['flash'] = ['type' => 'success', 'message' => 'Ticket created successfully!'];
-                header('Location: https://' . $_SERVER['HTTP_HOST'] . '/tickets');
+                header('Location: /tickets');
                 exit;
             }
         }
@@ -69,7 +69,7 @@ class TicketController {
         
         if (!$ticket) {
             $_SESSION['flash'] = ['type' => 'error', 'message' => 'Ticket not found!'];
-            header('Location: https://' . $_SERVER['HTTP_HOST'] . '/tickets');
+            header('Location: /tickets');
             exit;
         }
 
@@ -90,7 +90,7 @@ class TicketController {
         $ticket = Ticket::find($id);
         if (!$ticket) {
             $_SESSION['flash'] = ['type' => 'error', 'message' => 'Ticket not found!'];
-            header('Location: https://' . $_SERVER['HTTP_HOST'] . '/tickets');
+            header('Location: /tickets');
             exit;
         }
 
@@ -108,7 +108,7 @@ class TicketController {
             if (empty($errors)) {
                 Ticket::update($id, $data);
                 $_SESSION['flash'] = ['type' => 'success', 'message' => 'Ticket updated successfully!'];
-                header('Location: https://' . $_SERVER['HTTP_HOST'] . '/tickets');
+                header('Location: /tickets');
                 exit;
             }
         }
@@ -134,7 +134,7 @@ class TicketController {
             $_SESSION['flash'] = ['type' => 'error', 'message' => 'Ticket not found!'];
         }
         
-        header('Location: https://' . $_SERVER['HTTP_HOST'] . '/tickets');
+        header('Location: /tickets');
         exit;
     }
 }

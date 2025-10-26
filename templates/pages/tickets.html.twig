@@ -45,7 +45,7 @@
     {% if showForm %}
     <div class="ticket-form-section">
         <div class="form-card">
-            <form method="POST" action="{% if editingId %}https://{{ app.request.httpHost }}/tickets/update/{{ editingId }}{% else %}https://{{ app.request.httpHost }}/tickets/create{% endif %}" class="ticket-form">
+            <form method="POST" action="{% if editingId %}/tickets/update/{{ editingId }}{% else %}/tickets/create{% endif %}" class="ticket-form">
                 <div class="form-grid">
                     <div class="form-group full-width">
                         <label for="title" class="form-label">Ticket Title *</label>

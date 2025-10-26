@@ -1,4 +1,4 @@
-
+vendor/
 data/tickets.db
 data/tickets.json
 cache/
@@ -7,3 +7,4 @@ cache/
 .DS_Store
 .htaccess
 /composer.phar
+/api/index.php

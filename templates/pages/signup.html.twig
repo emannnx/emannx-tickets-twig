@@ -11,7 +11,7 @@
                 <p class="auth-subtitle">Join emannx-tickets and start managing your tickets</p>
             </div>
             
-            <form method="POST" class="auth-form">
+            <form method="POST" action="{{ app.request.pathinfo }}" class="auth-form">
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <input

@@ -25,7 +25,7 @@ class AuthController {
             if (empty($errors)) {
                 Session::login($email);
                 $_SESSION['flash'] = ['type' => 'success', 'message' => 'Login successful!'];
-                header('Location: /dashboard');
+                header('Location: https://' . $_SERVER['HTTP_HOST'] . '/dashboard');
                 exit;
             }
         }
@@ -55,7 +55,7 @@ class AuthController {
             if (empty($errors)) {
                 Session::login($email);
                 $_SESSION['flash'] = ['type' => 'success', 'message' => 'Account created successfully!'];
-                header('Location: /dashboard');
+                header('Location: https://' . $_SERVER['HTTP_HOST'] . '/dashboard');
                 exit;
             }
         }
@@ -68,7 +68,7 @@ class AuthController {
 
     public function logout() {
         Session::logout();
-        header('Location: /');
+        header('Location: https://' . $_SERVER['HTTP_HOST'] . '/');
         exit;
     }
 }
